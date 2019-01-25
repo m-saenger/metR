@@ -173,7 +173,7 @@ GeomTextContour <- ggplot2::ggproto("GeomTextContour", ggplot2::Geom,
     angle
 }
 
-.label.position <- function(data, min.size, skip, rotate) {
+.label.position <- function(data, min.size, skip, rotate, verbose = F) {
     data <- as.data.table(data)
     breaks <- unique(data$level)
     breaks.cut <- breaks[seq(1, length(breaks), by = skip + 1)]
@@ -184,12 +184,12 @@ GeomTextContour <- ggplot2::ggproto("GeomTextContour", ggplot2::Geom,
 
     # Safety strip around the edges (10%)
     safe <- c(0, 1) + 0.1*c(+1, -1)
-    data <- data[x %between% safe &
-                     y %between% safe]
+    data <- data[x %between% safe & y %between% safe]
 
+    print(sprintf("nrow in: %s", nrow(data)))
     data[, N := .N, by = piece]
     data <- data[N >= min.size]
-    print(sprintf("nrow: %s", nrow(data)))
+    print(sprintf("nrow out: %s", nrow(data)))
 
     # if (rotate == TRUE) {
         data[, angle := .cont.angle(x, y, min.size), by = piece]
