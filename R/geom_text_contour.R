@@ -177,19 +177,21 @@ GeomTextContour <- ggplot2::ggproto("GeomTextContour", ggplot2::Geom,
     data <- as.data.table(data)
     breaks <- unique(data$level)
     breaks.cut <- breaks[seq(1, length(breaks), by = skip + 1)]
+ 
+  print(sprintf("breaks.cut: %s", breaks.cut))
     data <- data[level %in% breaks.cut]
     data[, id := seq_len(.N), by = piece]
-    data[, c("dx", "dy") := .(.derv(x, id), .derv(y, id)),
-         by = .(piece)]
-
+    data[, c("dx", "dy") := .(.derv(x, id), .derv(y, id)), by = .(piece)]
+  
+ print(sprintf("nrow in: %s", nrow(data)))
     # Safety strip around the edges (10%)
     safe <- c(0, 1) + 0.1*c(+1, -1)
     data <- data[x %between% safe & y %between% safe]
 
-    print(sprintf("nrow in: %s", nrow(data)))
+ print(sprintf("nrow in: %s", nrow(data)))
     data[, N := .N, by = piece]
     data <- data[N >= min.size]
-    print(sprintf("nrow out: %s", nrow(data)))
+ print(sprintf("nrow out: %s", nrow(data)))
 
     # if (rotate == TRUE) {
         data[, angle := .cont.angle(x, y, min.size), by = piece]
