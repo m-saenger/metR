@@ -189,6 +189,7 @@ GeomTextContour <- ggplot2::ggproto("GeomTextContour", ggplot2::Geom,
 
     data[, N := .N, by = piece]
     data <- data[N >= min.size]
+    print(sprintf("nrow: %s", nrow(data)))
 
     # if (rotate == TRUE) {
         data[, angle := .cont.angle(x, y, min.size), by = piece]
