@@ -178,7 +178,7 @@ GeomTextContour <- ggplot2::ggproto("GeomTextContour", ggplot2::Geom,
     breaks <- unique(data$level)
     breaks.cut <- breaks[seq(1, length(breaks), by = skip + 1)]
  
-  print(sprintf("breaks.cut: %s", breaks.cut))
+  print(breaks.cut)
     data <- data[level %in% breaks.cut]
     data[, id := seq_len(.N), by = piece]
     data[, c("dx", "dy") := .(.derv(x, id), .derv(y, id)), by = .(piece)]
@@ -188,11 +188,12 @@ GeomTextContour <- ggplot2::ggproto("GeomTextContour", ggplot2::Geom,
     safe <- c(0, 1) + 0.1*c(+1, -1)
     data <- data[x %between% safe & y %between% safe]
 
- print(sprintf("nrow in: %s", nrow(data)))
+ print(sprintf("nrow strip: %s", nrow(data)))
     data[, N := .N, by = piece]
     data <- data[N >= min.size]
  print(sprintf("nrow out: %s", nrow(data)))
-
+ if(nrow(data) > 0){
+  
     # if (rotate == TRUE) {
         data[, angle := .cont.angle(x, y, min.size), by = piece]
     # }
@@ -208,7 +209,8 @@ GeomTextContour <- ggplot2::ggproto("GeomTextContour", ggplot2::Geom,
     # data <- data[min == TRUE]
     # data[, min := angle == min(angle, na.rm = T), by = piece]
     # data[, min := atan2(dy, dx) == min(atan2(dy, dx), na.rm = TRUE), by = piece]
-    data <- data[!is.na(dx + dy)]
+  }  
+   data <- data[!is.na(dx + dy)]
     if (rotate == FALSE) data[, c("dx", "dy") := .(0, 0)]
 
     return(data[min == TRUE, head(.SD, 1), by = piece])
